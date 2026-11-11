@@ -1,0 +1,24 @@
+{
+  "key": "entity",
+  "name": "Entity",
+  "description": "Identity shared by every business entity.",
+  "version": "0.1.0",
+  "properties": [
+    {
+      "key": "id",
+      "name": "ID",
+      "description": "Opaque, case-sensitive identifier in the system holding this record.",
+      "type": "string",
+      "required": true
+    },
+    {
+      "key": "external_references",
+      "name": "External references",
+      "description": "References keyed by vendor/type. Each key holds a list of IDs with optional routing keys identifying accounts or brands within that namespace.",
+      "type": "value",
+      "value": "external_reference",
+      "many": true,
+      "list": true
+    }
+  ]
+}

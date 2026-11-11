@@ -61,11 +61,13 @@ type navItem struct {
 
 // navigation lists every type under its kind, marking the page being shown.
 func navigation(pages []typePage, current string) []navGroup {
-	groups := []navGroup{{Title: "Entities"}, {Title: "Value types"}}
+	groups := []navGroup{{Title: "Entities"}, {Title: "Value types"}, {Title: "Base types"}}
 	for _, page := range pages {
 		group := &groups[1]
 		if page.Kind == "Entity" {
 			group = &groups[0]
+		} else if page.Kind == "Base entity" {
+			group = &groups[2]
 		}
 		group.Items = append(group.Items, navItem{Key: page.Key, Name: page.Name, Current: page.Key == current})
 	}
@@ -99,6 +101,9 @@ func build(catalogue schema.Catalogue, examples fs.FS, out string) error {
 			return err
 		}
 	}
+	if err := writeJSON(filepath.Join(out, "entity.json"), catalogue.BaseEntity); err != nil {
+		return err
+	}
 	for _, e := range catalogue.Entities {
 		if err := writeJSON(filepath.Join(out, e.Key+".json"), e); err != nil {
 			return err
@@ -121,7 +126,8 @@ func build(catalogue schema.Catalogue, examples fs.FS, out string) error {
 
 func typePages(catalogue schema.Catalogue, examples fs.FS) ([]typePage, error) {
 	values := catalogue.ValueSet()
-	var pages []typePage
+	base := catalogue.BaseEntity
+	pages := []typePage{{Key: base.Key, Name: base.Name, Description: base.Description, Version: base.Version, Kind: "Base entity", Properties: propertyRows(base.Properties, values)}}
 	for _, e := range catalogue.Entities {
 		pages = append(pages, typePage{
 			Key: e.Key, Name: e.Name, Description: e.Description, Version: e.Version, SameAs: e.SameAs, Kind: "Entity",
@@ -160,6 +166,9 @@ func propertyRows(properties []schema.Property, values schema.Values) []property
 		}
 		if p.Many {
 			row.Notes = append(row.Notes, "Several, keyed by a label")
+		}
+		if p.List {
+			row.Notes = append(row.Notes, "List of values")
 		}
 		if p.MatchKey {
 			row.Notes = append(row.Notes, "Match key")
@@ -255,21 +264,32 @@ func checkExample(record map[string]any, properties []schema.Property, values sc
 		if p.Type != schema.PropertyTypeValue {
 			continue
 		}
-		nested, ok := value.(map[string]any)
-		if !ok {
-			return fmt.Errorf("example %s.%s: must be an object", path, key)
-		}
-		entries := map[string]any{"": nested}
+		entries := map[string]any{"": value}
 		if p.Many {
-			entries = nested
-		}
-		for label, entry := range entries {
-			object, ok := entry.(map[string]any)
+			var ok bool
+			entries, ok = value.(map[string]any)
 			if !ok {
 				return fmt.Errorf("example %s.%s: must be an object", path, key)
 			}
-			if err := checkExample(object, values[p.Value].Properties, values, strings.TrimSuffix(path+"."+key+"."+label, ".")); err != nil {
-				return err
+		}
+		for label, entry := range entries {
+			entryPath := strings.TrimSuffix(path+"."+key+"."+label, ".")
+			items := []any{entry}
+			if p.List {
+				var ok bool
+				items, ok = entry.([]any)
+				if !ok {
+					return fmt.Errorf("example %s: must be a list", entryPath)
+				}
+			}
+			for _, item := range items {
+				object, ok := item.(map[string]any)
+				if !ok {
+					return fmt.Errorf("example %s: must be an object", entryPath)
+				}
+				if err := checkExample(object, values[p.Value].Properties, values, entryPath); err != nil {
+					return err
+				}
 			}
 		}
 	}

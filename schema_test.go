@@ -15,6 +15,17 @@ func TestReleasedDefinitionsLoad(t *testing.T) {
 	if !ok {
 		t.Fatal("customer is not defined")
 	}
+	id, ok := customer.Property("id")
+	if !ok || !id.Required || id.Type != PropertyTypeString {
+		t.Fatalf("customer is missing inherited identity: %+v", id)
+	}
+	refs, ok := customer.Property("external_references")
+	if !ok || !refs.Many || !refs.List || refs.Value != "external_reference" {
+		t.Fatalf("customer external references: %+v", refs)
+	}
+	if _, ok := c.ValueSet()["person"].Property("id"); ok {
+		t.Fatal("value types must not inherit entity identity")
+	}
 	email, _ := customer.Property("email")
 	if !email.MatchKey || email.Compare != CompareCaseInsensitive || email.SameAs != "https://schema.org/email" {
 		t.Errorf("customer email: %+v", email)
@@ -44,6 +55,7 @@ const minimalValue = `{"key":"address","name":"Address","version":"0.1.0","prope
 func TestLoadRejectsBrokenDefinitions(t *testing.T) {
 	load := func(entity, value string) error {
 		_, err := loadFS(fstest.MapFS{
+			"base/entity.json":       {Data: []byte(`{"key":"entity","name":"Entity","version":"0.1.0"}`)},
 			"entities/customer.json": {Data: []byte(entity)},
 			"types/address.json":     {Data: []byte(value)},
 		})
@@ -70,5 +82,16 @@ func TestLoadRejectsBrokenDefinitions(t *testing.T) {
 				t.Fatalf("got %v, want an error containing %q", err, tc.want)
 			}
 		})
+	}
+}
+
+func TestEntityCannotRedefineBaseProperties(t *testing.T) {
+	_, err := loadFS(fstest.MapFS{
+		"base/entity.json":       {Data: []byte(`{"key":"entity","name":"Entity","version":"0.1.0","properties":[{"key":"email","name":"Shared email","type":"string"}]}`)},
+		"entities/customer.json": {Data: []byte(minimalEntity)},
+		"types/address.json":     {Data: []byte(minimalValue)},
+	})
+	if err == nil || !strings.Contains(err.Error(), `property "email": defined twice`) {
+		t.Fatalf("got %v, want duplicate inherited property error", err)
 	}
 }

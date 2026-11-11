@@ -135,7 +135,7 @@ func validateProperties(properties []Property, values Values) error {
 		default:
 			return fmt.Errorf("property %q: unknown type %q", p.Key, p.Type)
 		}
-		if p.MatchKey && (p.Many || p.Type == PropertyTypeValue) {
+		if p.MatchKey && (p.Many || p.List || p.Type == PropertyTypeValue) {
 			return fmt.Errorf("property %q: a match key must be a single scalar", p.Key)
 		}
 		if err := validateSameAs(p.SameAs); err != nil {

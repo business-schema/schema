@@ -1,0 +1,21 @@
+{
+  "key": "external_reference",
+  "name": "External reference",
+  "description": "An opaque ID in another system, optionally scoped to an account or brand.",
+  "version": "0.1.0",
+  "properties": [
+    {
+      "key": "id",
+      "name": "ID",
+      "description": "Opaque, case-sensitive identifier assigned by the external system.",
+      "type": "string",
+      "required": true
+    },
+    {
+      "key": "routing_key",
+      "name": "Routing key",
+      "description": "Identifies the account or brand within the vendor/type namespace. Omit when routing is unambiguous.",
+      "type": "string"
+    }
+  ]
+}

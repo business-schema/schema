@@ -12,6 +12,7 @@ mappings.
 
 | Path | Holds |
 | --- | --- |
+| `base/entity.json` | Identity properties shared by every entity |
 | `entities/<key>.json` | Entity types: things with their own identity, such as `customer` |
 | `types/<key>.json` | Value types: reusable shapes held inside entities, such as `address` |
 | `examples/<key>.json` | An example record for each type, shown on its page |
@@ -31,11 +32,44 @@ value type has `properties` only. A property carries:
 | `type` | `string`, `number`, `boolean`, `date`, `datetime`, `enum` or `value` |
 | `value` | The value type's key, when `type` is `value` |
 | `format` | Narrows a string: `email`, `phone`, `country`, `currency`, `language`, `url` |
+| `list` | An array of values; with `many`, each labelled entry holds an array |
 | `many` | Several values keyed by a label, such as `billing` and `shipping` addresses |
 | `pii`, `secure` | Personal data; masked until revealed |
 | `compare` | When two systems' values count as equal, e.g. `case-insensitive` |
 | `matchKey` | Identifies the same record across systems |
 | `sameAs` | The equivalent term in another vocabulary, such as schema.org |
+
+## Entity identity
+
+Every entity inherits `id` and `external_references` from `base/entity.json`.
+Value types have no identity. The loader includes these shared properties in
+entity definitions returned by Go and published by the site; entity files
+contain only their own properties and cannot redefine the shared keys.
+
+`id` is required and identifies the record within the system holding it.
+External references link it to records in other systems:
+
+```json
+{
+  "id": "customer_123",
+  "external_references": {
+    "stripe/customer": [
+      {"routing_key": "brand_1", "id": "cust_32HDDsd"},
+      {"routing_key": "brand_2", "id": "cust_87ABCxy"}
+    ],
+    "fortifi/customer": [
+      {"id": "CST_456"}
+    ]
+  }
+}
+```
+
+Keys use `vendor/type`; each key always holds a list, even for one reference.
+A reference's optional `routing_key` identifies an account or brand within
+that namespace. Omit it when routing is unambiguous. Reference identity is
+`(vendor/type, routing_key, id)`, with an omitted routing key representing the
+default route. IDs and routing keys are opaque, case-sensitive strings.
+External references are optional; omit the property when none are known.
 
 ## Using it from Go
 

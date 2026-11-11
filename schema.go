@@ -80,6 +80,9 @@ type Property struct {
 	// billing and shipping addresses of a customer.
 	Many bool `json:"many,omitempty"`
 
+	// List holds an array of values. With Many, each labelled entry is an array.
+	List bool `json:"list,omitempty"`
+
 	Compare  Comparison `json:"compare,omitempty"`
 	MatchKey bool       `json:"matchKey,omitempty"` // Identifies the same record across systems
 	SameAs   string     `json:"sameAs,omitempty"`   // URL of the equivalent term in another vocabulary

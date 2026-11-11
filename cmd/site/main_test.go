@@ -31,7 +31,7 @@ func TestBuildWritesAPageAndDocumentForEveryType(t *testing.T) {
 			t.Errorf("%s is empty", name)
 		}
 	}
-	for _, key := range []string{"customer", "person", "address"} {
+	for _, key := range []string{"entity", "external_reference", "customer", "person", "address"} {
 		page := read(key + ".html")
 		if !strings.Contains(page, "<h2>Properties</h2>") || !strings.Contains(page, "<h2>Example</h2>") || !strings.Contains(page, `href="`+key+`.json"`) {
 			t.Errorf("%s page is missing a section", key)
@@ -50,6 +50,11 @@ func TestBuildWritesAPageAndDocumentForEveryType(t *testing.T) {
 			t.Errorf("%s has a root-relative link", page)
 		}
 	}
+	for _, want := range []string{`"key": "id"`, `"key": "external_references"`, `"list": true`} {
+		if !strings.Contains(read("customer.json"), want) {
+			t.Errorf("published customer definition is missing %s", want)
+		}
+	}
 	customer := read("customer.html")
 	for _, want := range []string{`<a href="address">Address</a>`, "Match key", "<h2>Statuses</h2>", "<h2>Events</h2>", "https://schema.org/email"} {
 		if !strings.Contains(customer, want) {
@@ -64,10 +69,13 @@ func TestExamplesMayOnlyUseDefinedProperties(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, example := range map[string]string{
-		"unknown property":        `{"display_name":"Alex","nickname":"A"}`,
-		"unknown nested property": `{"person":{"nick":"H"}}`,
-		"unknown in a labelled":   `{"addresses":{"billing":{"planet":"Earth"}}}`,
-		"value given as text":     `{"person":"Alex Morgan"}`,
+		"reference is not a list":    `{"external_references":{"stripe/customer":{"id":"cust_1"}}}`,
+		"reference is not an object": `{"external_references":{"stripe/customer":["cust_1"]}}`,
+		"unknown reference property": `{"external_references":{"stripe/customer":[{"vendor":"stripe","id":"cust_1"}]}}`,
+		"unknown property":           `{"display_name":"Alex","nickname":"A"}`,
+		"unknown nested property":    `{"person":{"nick":"H"}}`,
+		"unknown in a labelled":      `{"addresses":{"billing":{"planet":"Earth"}}}`,
+		"value given as text":        `{"person":"Alex Morgan"}`,
 	} {
 		t.Run(name, func(t *testing.T) {
 			examples := fstest.MapFS{"customer.json": {Data: []byte(example)}}

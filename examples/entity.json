@@ -1,0 +1,20 @@
+{
+  "id": "customer_123",
+  "external_references": {
+    "stripe/customer": [
+      {
+        "routing_key": "brand_1",
+        "id": "cust_32HDDsd"
+      },
+      {
+        "routing_key": "brand_2",
+        "id": "cust_87ABCxy"
+      }
+    ],
+    "fortifi/customer": [
+      {
+        "id": "CST_456"
+      }
+    ]
+  }
+}

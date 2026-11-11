@@ -40,7 +40,7 @@ curl https://business-schema.org/catalogue.json</code></pre>
     <div class="usage">
       <div>
         <h3>Shape your records to match</h3>
-        <p>A record is a JSON object keyed by the type's property keys. Value types nest, and a property that holds several values is keyed by a label you choose, such as <code>billing</code>.</p>
+        <p>A record is a JSON object keyed by the type's property keys. Every entity has an <code>id</code> and can link to IDs in other systems through <code>external_references</code>. Value types nest; collections can be keyed by labels, lists, or lists under each label.</p>
       </div>
       {{range .Types}}{{if eq .Key "customer"}}<pre><code>{{.Example}}</code></pre>{{end}}{{end}}
     </div>

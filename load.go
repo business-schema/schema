@@ -11,13 +11,14 @@ import (
 	"strings"
 )
 
-//go:embed entities/*.json types/*.json
+//go:embed base/*.json entities/*.json types/*.json
 var definitions embed.FS
 
 // Catalogue is every definition in one release of the schema.
 type Catalogue struct {
-	Entities []Entity `json:"entities"`
-	Values   []Value  `json:"values"`
+	BaseEntity Value    `json:"baseEntity"` // Shared properties, included in every loaded entity.
+	Entities   []Entity `json:"entities"`
+	Values     []Value  `json:"values"`
 }
 
 // ValueSet returns the catalogue's value types by key.
@@ -40,6 +41,12 @@ func (c Catalogue) Validate() error {
 	}
 	if err := values.Validate(); err != nil {
 		return err
+	}
+	if err := validateHeader(c.BaseEntity.Name, c.BaseEntity.Version, c.BaseEntity.SameAs); err != nil {
+		return fmt.Errorf("base entity: %w", err)
+	}
+	if err := validateProperties(c.BaseEntity.Properties, values); err != nil {
+		return fmt.Errorf("base entity: %w", err)
 	}
 	entities := map[string]bool{}
 	for _, e := range c.Entities {
@@ -67,11 +74,22 @@ func Load() (Catalogue, error) { return loadFS(definitions) }
 
 func loadFS(files fs.FS) (Catalogue, error) {
 	var c Catalogue
+	var bases []Value
+	if err := readDir(files, "base", func(v Value) string { return v.Key }, &bases); err != nil {
+		return Catalogue{}, err
+	}
+	if len(bases) != 1 || bases[0].Key != "entity" {
+		return Catalogue{}, fmt.Errorf("base must contain only the entity definition")
+	}
+	c.BaseEntity = bases[0]
 	if err := readDir(files, "types", func(v Value) string { return v.Key }, &c.Values); err != nil {
 		return Catalogue{}, err
 	}
 	if err := readDir(files, "entities", func(e Entity) string { return e.Key }, &c.Entities); err != nil {
 		return Catalogue{}, err
+	}
+	for i := range c.Entities {
+		c.Entities[i].Properties = append(append([]Property(nil), c.BaseEntity.Properties...), c.Entities[i].Properties...)
 	}
 	if err := c.Validate(); err != nil {
 		return Catalogue{}, err

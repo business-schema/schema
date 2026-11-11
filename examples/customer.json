@@ -19,7 +19,7 @@
   },
   "party_type": "individual",
   "display_name": "Alex Morgan",
-  "person": {
+  "primary_contact": {
     "given_name": "Alex",
     "family_name": "Morgan"
   },
@@ -39,5 +39,8 @@
   "lifecycle_stage": "customer",
   "status": "active",
   "timezone": "Europe/London",
-  "is_test_account": false
+  "is_test_account": false,
+  "commercial_model": "paid",
+  "billing_stage": "trial",
+  "payment_status": "none"
 }

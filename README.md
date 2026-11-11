@@ -24,7 +24,7 @@ Each file holds one definition and is named after its `key`.
 
 ## Definition format
 
-An entity has `properties`, `statuses`, `relations`, `actions` and `events`. A
+An entity has `properties`, `relations`, `actions` and `events`. A
 value type has `properties` only. A property carries:
 
 | Field | Meaning |
@@ -76,15 +76,40 @@ that namespace. Omit it when routing is unambiguous. Reference identity is
 default route. IDs and routing keys are opaque, case-sensitive strings.
 External references are optional; omit the property when none are known.
 
-## Customer lifecycle and status
+## Customer relationship and account state
 
-`party_type` distinguishes an `individual` from an `organization`.
-`lifecycle_stage` describes the relationship: `prospect`, `customer` or
-`closed`. The separate `status` describes the account: `active` or
-`suspended`. A prospect can have an active account, and closing the
-relationship does not itself change account status.
+Customer covers potential, current and former customers. `party_type`
+distinguishes an `individual` from an `organization`. `primary_contact`
+holds the individual themselves or the main representative of an organization,
+using the reusable `person` value type.
 
-Use `change_lifecycle` and `change_status` to change these fields; they emit
+These independent enums describe the relationship and account:
+
+| Property | Values | Meaning |
+| --- | --- | --- |
+| `lifecycle_stage` | `lead`, `prospect`, `customer`, `former_customer`, `disqualified` | Overall relationship; a prospect is a qualified lead |
+| `lead_temperature` | `cold`, `warm`, `hot` | Current interest or engagement |
+| `qualification_stage` | `unqualified`, `marketing_qualified`, `sales_qualified` | Qualification reached |
+| `status` | `pending`, `active`, `inactive`, `suspended`, `closed` | Operational account state |
+| `commercial_model` | `none`, `free`, `freemium`, `paid` | How the account is offered |
+| `billing_stage` | `none`, `trial`, `paying`, `cancelled` | Billing relationship |
+| `payment_status` | `none`, `current`, `past_due`, `delinquent` | Whether payment obligations are met |
+
+Set lifecycle and status explicitly. Enum options on the `status` property
+are the single definition of account statuses; there is no separate statuses
+list or implicit default. Omit optional fields when unknown or inapplicable;
+`none` explicitly means no offering, billing relationship or payment obligation.
+
+Temperature and qualification are independent: a sales-qualified prospect
+can go cold. A former customer can retain an active account. Free means no
+payment is expected, while freemium describes an offering with a free tier
+and paid upgrades. A paid offering can be in trial with no payment obligation.
+Cancellation does not itself end access or close an account. Past due means
+a payment is overdue; delinquent means the account meets the business's
+escalation policy. Billing and payment fields are account summaries when
+multiple subscriptions exist; each subscription retains its own state.
+
+Use `change_lifecycle` and `change_status` to change those fields; they emit
 `lifecycle_changed` and `status_changed`, respectively. `is_test_account`
 marks accounts used for testing. `timezone` holds an IANA timezone name such
 as `Europe/London`.

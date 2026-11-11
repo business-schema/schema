@@ -58,11 +58,14 @@ func TestBuildWritesAPageAndDocumentForEveryType(t *testing.T) {
 	if !strings.Contains(read("customer.json"), `"base": "entity"`) || strings.Contains(read("customer.json"), `"key": "id"`) {
 		t.Error("customer definition must reference the base without duplicating its properties")
 	}
+	if strings.Contains(read("customer.json"), `"statuses"`) || strings.Contains(read("customer.html"), "<h2>Statuses</h2>") {
+		t.Error("customer must define status only through its enum property")
+	}
 	customer := read("customer.html")
 	if !strings.Contains(customer, "external_references") || !strings.Contains(customer, "Base type") {
 		t.Error("customer page must show its base and inherited properties")
 	}
-	for _, want := range []string{`<a href="address">Address</a>`, "Match key", "<h2>Statuses</h2>", "<h2>Events</h2>", "https://schema.org/email"} {
+	for _, want := range []string{`<a href="address">Address</a>`, "Match key", "<h2>Actions</h2>", "<h2>Events</h2>", "https://schema.org/email"} {
 		if !strings.Contains(customer, want) {
 			t.Errorf("customer page is missing %q", want)
 		}
@@ -79,9 +82,9 @@ func TestExamplesMayOnlyUseDefinedProperties(t *testing.T) {
 		"reference is not an object": `{"external_references":{"stripe/customer":["cust_1"]}}`,
 		"unknown reference property": `{"external_references":{"stripe/customer":[{"vendor":"stripe","id":"cust_1"}]}}`,
 		"unknown property":           `{"display_name":"Alex","nickname":"A"}`,
-		"unknown nested property":    `{"person":{"nick":"H"}}`,
+		"unknown nested property":    `{"primary_contact":{"nick":"H"}}`,
 		"unknown in a labelled":      `{"addresses":{"billing":{"planet":"Earth"}}}`,
-		"value given as text":        `{"person":"Alex Morgan"}`,
+		"value given as text":        `{"primary_contact":"Alex Morgan"}`,
 	} {
 		t.Run(name, func(t *testing.T) {
 			examples := fstest.MapFS{"customer.json": {Data: []byte(example)}}

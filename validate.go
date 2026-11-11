@@ -64,12 +64,6 @@ func (e Entity) Validate(values Values) error {
 	if err := validateProperties(e.Properties, values); err != nil {
 		return fail("%s", err)
 	}
-	if len(e.Statuses) == 0 {
-		return fail("at least one status is required")
-	}
-	if err := uniqueKeys("status", len(e.Statuses), func(i int) string { return e.Statuses[i].Key }); err != nil {
-		return fail("%s", err)
-	}
 	if err := uniqueKeys("relation", len(e.Relations), func(i int) string { return e.Relations[i].Key }); err != nil {
 		return fail("%s", err)
 	}

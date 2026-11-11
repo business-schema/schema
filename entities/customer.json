@@ -3,7 +3,7 @@
   "base": "entity",
   "name": "Customer",
   "pluralName": "Customers",
-  "description": "A person or organization the business sells to or may sell to.",
+  "description": "A person or organization with a potential, current or former customer relationship with the business.",
   "version": "0.1.0",
   "properties": [
     {
@@ -20,24 +20,87 @@
     {
       "key": "lifecycle_stage",
       "name": "Lifecycle stage",
-      "description": "The commercial relationship, independent of account status. A prospect has not yet become a customer; a closed relationship may later reopen.",
+      "description": "The overall commercial relationship, independent of account status. A prospect is a qualified lead; a former customer previously had an established customer relationship.",
       "type": "enum",
       "required": true,
       "options": {
+        "lead": "Lead",
         "prospect": "Prospect",
         "customer": "Customer",
-        "closed": "Closed"
+        "former_customer": "Former customer",
+        "disqualified": "Disqualified"
+      }
+    },
+    {
+      "key": "lead_temperature",
+      "name": "Lead temperature",
+      "description": "Current interest or engagement, independent of qualification. Omit when unknown or not applicable.",
+      "type": "enum",
+      "options": {
+        "cold": "Cold",
+        "warm": "Warm",
+        "hot": "Hot"
+      }
+    },
+    {
+      "key": "qualification_stage",
+      "name": "Qualification stage",
+      "description": "The qualification reached by a lead or prospect. Omit when unknown or not applicable.",
+      "type": "enum",
+      "options": {
+        "unqualified": "Unqualified",
+        "marketing_qualified": "Marketing qualified",
+        "sales_qualified": "Sales qualified"
       }
     },
     {
       "key": "status",
       "name": "Account status",
-      "description": "Whether the account is active or suspended, independent of lifecycle stage. A new account is active unless another status is given.",
+      "description": "The operational account state, independent of lifecycle, billing and payment state. Set explicitly when creating an account.",
       "type": "enum",
       "required": true,
       "options": {
+        "pending": "Pending",
         "active": "Active",
-        "suspended": "Suspended"
+        "inactive": "Inactive",
+        "suspended": "Suspended",
+        "closed": "Closed"
+      }
+    },
+    {
+      "key": "commercial_model",
+      "name": "Commercial model",
+      "description": "How the account is offered. Free means no payment is expected; freemium offers a free tier with paid upgrades. None means no commercial offering applies.",
+      "type": "enum",
+      "options": {
+        "none": "None",
+        "free": "Free",
+        "freemium": "Freemium",
+        "paid": "Paid"
+      }
+    },
+    {
+      "key": "billing_stage",
+      "name": "Billing stage",
+      "description": "The account billing relationship. Cancellation does not itself end access or close the account. For multiple subscriptions this is an account summary; individual subscription states remain separate.",
+      "type": "enum",
+      "options": {
+        "none": "None",
+        "trial": "Trial",
+        "paying": "Paying",
+        "cancelled": "Cancelled"
+      }
+    },
+    {
+      "key": "payment_status",
+      "name": "Payment status",
+      "description": "Whether account payment obligations are met. None means no obligation applies; current means obligations are met; past due means a payment is overdue; delinquent means it meets the business's escalation policy. This is an account summary when several subscriptions exist.",
+      "type": "enum",
+      "options": {
+        "none": "None",
+        "current": "Current",
+        "past_due": "Past due",
+        "delinquent": "Delinquent"
       }
     },
     {
@@ -55,9 +118,9 @@
       "pii": true
     },
     {
-      "key": "person",
-      "name": "Person",
-      "description": "The individual, or the main contact at an organization.",
+      "key": "primary_contact",
+      "name": "Primary contact",
+      "description": "The main person to contact: the customer themselves for an individual, or their representative for an organization.",
       "type": "value",
       "value": "person",
       "pii": true
@@ -123,18 +186,6 @@
       "type": "string",
       "format": "currency",
       "compare": "case-insensitive"
-    }
-  ],
-  "statuses": [
-    {
-      "key": "active",
-      "name": "Active",
-      "tone": "success"
-    },
-    {
-      "key": "suspended",
-      "name": "Suspended",
-      "tone": "warning"
     }
   ],
   "actions": [

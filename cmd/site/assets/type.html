@@ -35,16 +35,8 @@
   </section>
 
   <div class="split">
-    {{if .Statuses}}
+    {{if or .Actions .Events}}
     <div>
-      <section>
-        <h2>Statuses</h2>
-        <p class="aside">A new record takes the first status unless another is given.</p>
-        <table class="keys">
-          <tbody>{{range .Statuses}}<tr><td><code>{{.Key}}</code></td><td>{{.Name}}</td></tr>{{end}}</tbody>
-        </table>
-      </section>
-
       {{if .Actions}}
       <section>
         <h2>Actions</h2>

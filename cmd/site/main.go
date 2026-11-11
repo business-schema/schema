@@ -42,7 +42,6 @@ type typePage struct {
 	Kind                                    string // Entity, Base entity or Value type
 	Base                                    string
 	Properties                              []propertyRow
-	Statuses                                []schema.Status
 	Actions                                 []schema.Action
 	Events                                  []schema.Event
 	Example                                 string
@@ -133,7 +132,7 @@ func typePages(catalogue schema.Catalogue, examples fs.FS) ([]typePage, error) {
 		e, _ := catalogue.Entity(definition.Key)
 		pages = append(pages, typePage{
 			Key: e.Key, Name: e.Name, Description: e.Description, Version: e.Version, SameAs: e.SameAs, Kind: "Entity", Base: e.Base,
-			Properties: propertyRows(e.Properties, values), Statuses: e.Statuses, Actions: e.Actions, Events: e.Events,
+			Properties: propertyRows(e.Properties, values), Actions: e.Actions, Events: e.Events,
 		})
 	}
 	for _, v := range catalogue.Values {

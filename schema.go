@@ -26,7 +26,6 @@ type Entity struct {
 	SameAs      string `json:"sameAs,omitempty"`      // URL of the equivalent term in another vocabulary
 
 	Properties []Property `json:"properties,omitempty"`
-	Statuses   []Status   `json:"statuses,omitempty"` // The first status is the default for a new record
 	Relations  []Relation `json:"relations,omitempty"`
 	Actions    []Action   `json:"actions,omitempty"`
 	Events     []Event    `json:"events,omitempty"`
@@ -99,22 +98,6 @@ type Property struct {
 	SameAs   string     `json:"sameAs,omitempty"`   // URL of the equivalent term in another vocabulary
 }
 
-type Tone string
-
-const (
-	ToneNeutral Tone = "neutral"
-	ToneInfo    Tone = "info"
-	ToneSuccess Tone = "success"
-	ToneWarning Tone = "warning"
-	ToneDanger  Tone = "danger"
-)
-
-type Status struct {
-	Key  string `json:"key"`
-	Name string `json:"name"`
-	Tone Tone   `json:"tone,omitempty"`
-}
-
 // Relation links this entity to another entity type.
 type Relation struct {
 	Key         string `json:"key"`                   // e.g. subscriptions
@@ -141,15 +124,6 @@ type Event struct {
 func (e Entity) Property(key string) (Property, bool) { return findProperty(e.Properties, key) }
 
 func (v Value) Property(key string) (Property, bool) { return findProperty(v.Properties, key) }
-
-func (e Entity) Status(key string) (Status, bool) {
-	for _, s := range e.Statuses {
-		if s.Key == key {
-			return s, true
-		}
-	}
-	return Status{}, false
-}
 
 func (e Entity) Event(key string) (Event, bool) {
 	for _, ev := range e.Events {

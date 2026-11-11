@@ -51,11 +51,17 @@ func TestBuildWritesAPageAndDocumentForEveryType(t *testing.T) {
 		}
 	}
 	for _, want := range []string{`"key": "id"`, `"key": "external_references"`, `"list": true`} {
-		if !strings.Contains(read("customer.json"), want) {
-			t.Errorf("published customer definition is missing %s", want)
+		if !strings.Contains(read("entity.json"), want) {
+			t.Errorf("published base definition is missing %s", want)
 		}
 	}
+	if !strings.Contains(read("customer.json"), `"base": "entity"`) || strings.Contains(read("customer.json"), `"key": "id"`) {
+		t.Error("customer definition must reference the base without duplicating its properties")
+	}
 	customer := read("customer.html")
+	if !strings.Contains(customer, "external_references") || !strings.Contains(customer, "Base type") {
+		t.Error("customer page must show its base and inherited properties")
+	}
 	for _, want := range []string{`<a href="address">Address</a>`, "Match key", "<h2>Statuses</h2>", "<h2>Events</h2>", "https://schema.org/email"} {
 		if !strings.Contains(customer, want) {
 			t.Errorf("customer page is missing %q", want)

@@ -4,10 +4,21 @@
 // validates them and loads the set released with this version of the module.
 package schema
 
+// BaseEntity defines the properties inherited by every entity type.
+// It has no lifecycle, actions or events of its own.
+type BaseEntity struct {
+	Key         string     `json:"key"`
+	Name        string     `json:"name"`
+	Description string     `json:"description,omitempty"`
+	Version     string     `json:"version"`
+	Properties  []Property `json:"properties"`
+}
+
 // Entity describes a business entity type: a thing with its own identity that
 // systems read, change through actions and hear about through events.
 type Entity struct {
-	Key         string `json:"key"` // e.g. customer
+	Base        string `json:"base"` // Key of the shared base entity definition.
+	Key         string `json:"key"`  // e.g. customer
 	Name        string `json:"name"`
 	PluralName  string `json:"pluralName"`
 	Description string `json:"description,omitempty"` // Plain-language description

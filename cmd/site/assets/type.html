@@ -7,6 +7,7 @@
     <p>{{.Description}}</p>
     <dl class="meta">
       <div><dt>Kind</dt><dd>{{.Kind}}</dd></div>
+      {{if .Base}}<div><dt>Base type</dt><dd><a href="{{.Base}}">{{.Base}}</a></dd></div>{{end}}
       <div><dt>Version</dt><dd>{{.Version}}</dd></div>
       <div><dt>Definition</dt><dd><a href="{{.Key}}.json">{{.Key}}.json</a></dd></div>
       {{if .SameAs}}<div><dt>Equivalent</dt><dd><a href="{{.SameAs}}">{{.SameAs}}</a></dd></div>{{end}}

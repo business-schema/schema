@@ -39,7 +39,8 @@ func main() {
 // typePage is one entity or value type as the site presents it.
 type typePage struct {
 	Key, Name, Description, Version, SameAs string
-	Kind                                    string // Entity or Value type
+	Kind                                    string // Entity, Base entity or Value type
+	Base                                    string
 	Properties                              []propertyRow
 	Statuses                                []schema.Status
 	Actions                                 []schema.Action
@@ -128,9 +129,10 @@ func typePages(catalogue schema.Catalogue, examples fs.FS) ([]typePage, error) {
 	values := catalogue.ValueSet()
 	base := catalogue.BaseEntity
 	pages := []typePage{{Key: base.Key, Name: base.Name, Description: base.Description, Version: base.Version, Kind: "Base entity", Properties: propertyRows(base.Properties, values)}}
-	for _, e := range catalogue.Entities {
+	for _, definition := range catalogue.Entities {
+		e, _ := catalogue.Entity(definition.Key)
 		pages = append(pages, typePage{
-			Key: e.Key, Name: e.Name, Description: e.Description, Version: e.Version, SameAs: e.SameAs, Kind: "Entity",
+			Key: e.Key, Name: e.Name, Description: e.Description, Version: e.Version, SameAs: e.SameAs, Kind: "Entity", Base: e.Base,
 			Properties: propertyRows(e.Properties, values), Statuses: e.Statuses, Actions: e.Actions, Events: e.Events,
 		})
 	}

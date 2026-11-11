@@ -26,6 +26,14 @@ func TestReleasedDefinitionsLoad(t *testing.T) {
 	if _, ok := c.ValueSet()["person"].Property("id"); ok {
 		t.Fatal("value types must not inherit entity identity")
 	}
+	for _, e := range c.Entities {
+		if e.Base != "entity" {
+			t.Errorf("entity %s does not declare the shared base", e.Key)
+		}
+		if _, ok := e.Property("id"); ok {
+			t.Errorf("entity %s duplicates an inherited property", e.Key)
+		}
+	}
 	email, _ := customer.Property("email")
 	if !email.MatchKey || email.Compare != CompareCaseInsensitive || email.SameAs != "https://schema.org/email" {
 		t.Errorf("customer email: %+v", email)
@@ -44,7 +52,7 @@ func TestReleasedDefinitionsLoad(t *testing.T) {
 	}
 }
 
-const minimalEntity = `{"key":"customer","name":"Customer","pluralName":"Customers","version":"0.1.0",
+const minimalEntity = `{"base":"entity","key":"customer","name":"Customer","pluralName":"Customers","version":"0.1.0",
 	"properties":[{"key":"email","name":"Email","type":"string","matchKey":true},{"key":"home","name":"Home","type":"value","value":"address"}],
 	"statuses":[{"key":"active","name":"Active"}],
 	"actions":[{"key":"create","name":"Create","emits":["created"]}],
@@ -65,6 +73,8 @@ func TestLoadRejectsBrokenDefinitions(t *testing.T) {
 		t.Fatalf("minimal definitions should load: %v", err)
 	}
 	for name, tc := range map[string]struct{ entity, value, want string }{
+		"missing base":         {strings.Replace(minimalEntity, `"base":"entity",`, ``, 1), minimalValue, "base must be"},
+		"unknown base":         {strings.Replace(minimalEntity, `"base":"entity"`, `"base":"other"`, 1), minimalValue, "base must be"},
 		"unknown field":        {strings.Replace(minimalEntity, `"version"`, `"colour":"red","version"`, 1), minimalValue, "unknown field"},
 		"wrong file name":      {strings.Replace(minimalEntity, `"key":"customer"`, `"key":"client"`, 1), minimalValue, `expected "customer"`},
 		"bad version":          {strings.Replace(minimalEntity, `0.1.0`, `v1`, 1), minimalValue, "semantic version"},

@@ -1,5 +1,6 @@
 {
   "key": "customer",
+  "base": "entity",
   "name": "Customer",
   "pluralName": "Customers",
   "description": "A person or organization the business sells to.",

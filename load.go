@@ -16,17 +16,20 @@ var definitions embed.FS
 
 // Catalogue is every definition in one release of the schema.
 type Catalogue struct {
-	BaseEntity Value    `json:"baseEntity"` // Shared properties, included in every loaded entity.
-	Entities   []Entity `json:"entities"`
-	Values     []Value  `json:"values"`
+	BaseEntity BaseEntity `json:"baseEntity"` // Shared properties, defined once.
+	Entities   []Entity   `json:"entities"`
+	Values     []Value    `json:"values"`
 }
 
 // ValueSet returns the catalogue's value types by key.
 func (c Catalogue) ValueSet() Values { return NewValues(c.Values...) }
 
+// Entity returns an entity with its inherited properties resolved.
+// Catalogue.Entities retains only the properties declared by each entity.
 func (c Catalogue) Entity(key string) (Entity, bool) {
 	for _, e := range c.Entities {
 		if e.Key == key {
+			e.Properties = append(append([]Property(nil), c.BaseEntity.Properties...), e.Properties...)
 			return e, true
 		}
 	}
@@ -42,7 +45,10 @@ func (c Catalogue) Validate() error {
 	if err := values.Validate(); err != nil {
 		return err
 	}
-	if err := validateHeader(c.BaseEntity.Name, c.BaseEntity.Version, c.BaseEntity.SameAs); err != nil {
+	if c.BaseEntity.Key != "entity" {
+		return fmt.Errorf("base entity: key must be entity")
+	}
+	if err := validateHeader(c.BaseEntity.Name, c.BaseEntity.Version, ""); err != nil {
 		return fmt.Errorf("base entity: %w", err)
 	}
 	if err := validateProperties(c.BaseEntity.Properties, values); err != nil {
@@ -54,7 +60,11 @@ func (c Catalogue) Validate() error {
 			return fmt.Errorf("entity %q: defined twice", e.Key)
 		}
 		entities[e.Key] = true
-		if err := e.Validate(values); err != nil {
+		if e.Base != c.BaseEntity.Key {
+			return fmt.Errorf("entity %q: base must be %q", e.Key, c.BaseEntity.Key)
+		}
+		resolved, _ := c.Entity(e.Key)
+		if err := resolved.Validate(values); err != nil {
 			return err
 		}
 	}
@@ -74,8 +84,8 @@ func Load() (Catalogue, error) { return loadFS(definitions) }
 
 func loadFS(files fs.FS) (Catalogue, error) {
 	var c Catalogue
-	var bases []Value
-	if err := readDir(files, "base", func(v Value) string { return v.Key }, &bases); err != nil {
+	var bases []BaseEntity
+	if err := readDir(files, "base", func(v BaseEntity) string { return v.Key }, &bases); err != nil {
 		return Catalogue{}, err
 	}
 	if len(bases) != 1 || bases[0].Key != "entity" {
@@ -87,9 +97,6 @@ func loadFS(files fs.FS) (Catalogue, error) {
 	}
 	if err := readDir(files, "entities", func(e Entity) string { return e.Key }, &c.Entities); err != nil {
 		return Catalogue{}, err
-	}
-	for i := range c.Entities {
-		c.Entities[i].Properties = append(append([]Property(nil), c.BaseEntity.Properties...), c.Entities[i].Properties...)
 	}
 	if err := c.Validate(); err != nil {
 		return Catalogue{}, err

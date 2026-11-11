@@ -41,10 +41,15 @@ value type has `properties` only. A property carries:
 
 ## Entity identity
 
-Every entity inherits `id` and `external_references` from `base/entity.json`.
-Value types have no identity. The loader includes these shared properties in
-entity definitions returned by Go and published by the site; entity files
-contain only their own properties and cannot redefine the shared keys.
+Every entity declares `"base": "entity"` and inherits `id` and
+`external_references` from `base/entity.json`. Value types have no identity.
+The base is required, and entities cannot redefine its properties.
+
+Source files, published JSON definitions and `Catalogue.Entities` contain
+only each entity's own properties and its base reference. The site publishes
+the shared definition at `entity.json` and shows inherited properties on each
+entity's page. In Go, `Catalogue.Entity(key)` returns the entity with its
+inherited properties resolved.
 
 `id` is required and identifies the record within the system holding it.
 External references link it to records in other systems:

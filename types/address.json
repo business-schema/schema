@@ -1,0 +1,73 @@
+{
+  "key": "address",
+  "name": "Address",
+  "description": "A postal address, with who it is addressed to.",
+  "version": "0.1.0",
+  "sameAs": "https://schema.org/PostalAddress",
+  "properties": [
+    {
+      "key": "recipient",
+      "name": "Recipient",
+      "description": "The person post is addressed to.",
+      "type": "string",
+      "pii": true
+    },
+    {
+      "key": "organization",
+      "name": "Organization",
+      "type": "string"
+    },
+    {
+      "key": "line1",
+      "name": "Address line 1",
+      "type": "string",
+      "pii": true,
+      "secure": true
+    },
+    {
+      "key": "line2",
+      "name": "Address line 2",
+      "type": "string",
+      "pii": true,
+      "secure": true
+    },
+    {
+      "key": "line3",
+      "name": "Address line 3",
+      "type": "string",
+      "pii": true,
+      "secure": true
+    },
+    {
+      "key": "city",
+      "name": "Town or city",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/addressLocality"
+    },
+    {
+      "key": "region",
+      "name": "County, state or region",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/addressRegion"
+    },
+    {
+      "key": "postal_code",
+      "name": "Postal code",
+      "type": "string",
+      "pii": true,
+      "secure": true,
+      "compare": "case-insensitive",
+      "sameAs": "https://schema.org/postalCode"
+    },
+    {
+      "key": "country",
+      "name": "Country",
+      "type": "string",
+      "format": "country",
+      "compare": "case-insensitive",
+      "sameAs": "https://schema.org/addressCountry"
+    }
+  ]
+}

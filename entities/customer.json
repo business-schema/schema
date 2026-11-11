@@ -1,0 +1,140 @@
+{
+  "key": "customer",
+  "name": "Customer",
+  "pluralName": "Customers",
+  "description": "A person or organization the business sells to.",
+  "version": "0.1.0",
+  "properties": [
+    {
+      "key": "type",
+      "name": "Account type",
+      "type": "enum",
+      "required": true,
+      "options": {
+        "individual": "Individual",
+        "organization": "Organization"
+      }
+    },
+    {
+      "key": "display_name",
+      "name": "Name",
+      "description": "The name shown for this customer.",
+      "type": "string",
+      "required": true,
+      "pii": true
+    },
+    {
+      "key": "person",
+      "name": "Person",
+      "description": "The individual, or the main contact at an organization.",
+      "type": "value",
+      "value": "person",
+      "pii": true
+    },
+    {
+      "key": "organization",
+      "name": "Organization",
+      "description": "The organization, when the customer is one.",
+      "type": "value",
+      "value": "organization"
+    },
+    {
+      "key": "email",
+      "name": "Email",
+      "type": "string",
+      "format": "email",
+      "pii": true,
+      "compare": "case-insensitive",
+      "matchKey": true,
+      "sameAs": "https://schema.org/email"
+    },
+    {
+      "key": "phone",
+      "name": "Phone",
+      "type": "string",
+      "format": "phone",
+      "pii": true,
+      "secure": true,
+      "sameAs": "https://schema.org/telephone"
+    },
+    {
+      "key": "addresses",
+      "name": "Addresses",
+      "description": "Keyed by role, such as billing or shipping.",
+      "type": "value",
+      "value": "address",
+      "pii": true,
+      "many": true
+    },
+    {
+      "key": "country",
+      "name": "Country",
+      "type": "string",
+      "format": "country",
+      "compare": "case-insensitive"
+    },
+    {
+      "key": "language",
+      "name": "Language",
+      "type": "string",
+      "format": "language",
+      "compare": "case-insensitive"
+    },
+    {
+      "key": "currency",
+      "name": "Currency",
+      "type": "string",
+      "format": "currency",
+      "compare": "case-insensitive"
+    }
+  ],
+  "statuses": [
+    {
+      "key": "prospect",
+      "name": "Prospect",
+      "tone": "info"
+    },
+    {
+      "key": "active",
+      "name": "Active",
+      "tone": "success"
+    },
+    {
+      "key": "suspended",
+      "name": "Suspended",
+      "tone": "warning"
+    },
+    {
+      "key": "closed",
+      "name": "Closed",
+      "tone": "neutral"
+    }
+  ],
+  "actions": [
+    {
+      "key": "create",
+      "name": "Create customer",
+      "emits": [
+        "created"
+      ]
+    },
+    {
+      "key": "update",
+      "name": "Update customer",
+      "description": "Change properties or status.",
+      "emits": [
+        "updated"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "key": "created",
+      "name": "Customer created"
+    },
+    {
+      "key": "updated",
+      "name": "Customer updated"
+    }
+  ]
+}

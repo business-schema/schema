@@ -1,0 +1,77 @@
+{{template "head" "Business Schema"}}
+<div class="shell">
+{{template "rail" .Nav}}
+<main>
+  <header class="intro">
+    <h1>A shared definition of the things a business runs on.</h1>
+    <p>Every system has its own idea of a customer. Business Schema defines it once, in the open: the properties it has, which of them are personal data, and how to tell that two systems are describing the same one.</p>
+  </header>
+
+  <section>
+    <h2>Types</h2>
+    <table class="index">
+      <thead><tr><th>Type</th><th>Kind</th><th>Describes</th><th class="count">Properties</th></tr></thead>
+      <tbody>
+        {{range .Types}}
+        <tr>
+          <td><a href="{{.Key}}">{{.Name}}</a></td>
+          <td>{{.Kind}}</td>
+          <td>{{.Description}}</td>
+          <td class="count">{{len .Properties}}</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    <p class="aside">An entity has its own identity and life. A value type is a reusable shape held inside an entity, such as an address on a customer.</p>
+  </section>
+
+  <section>
+    <h2>Using the schema</h2>
+
+    <div class="usage">
+      <div>
+        <h3>Read a definition</h3>
+        <p>Each type is published as a page for people and a JSON document for software. The whole release is one catalogue.</p>
+      </div>
+      <pre><code>curl https://business-schema.org/customer.json
+curl https://business-schema.org/catalogue.json</code></pre>
+    </div>
+
+    <div class="usage">
+      <div>
+        <h3>Shape your records to match</h3>
+        <p>A record is a JSON object keyed by the type's property keys. Value types nest, and a property that holds several values is keyed by a label you choose, such as <code>billing</code>.</p>
+      </div>
+      {{range .Types}}{{if eq .Key "customer"}}<pre><code>{{.Example}}</code></pre>{{end}}{{end}}
+    </div>
+
+    <div class="usage">
+      <div>
+        <h3>Load it from Go</h3>
+        <p>The Go module carries the definitions it was released with, so upgrading is a deliberate change to your dependencies.</p>
+      </div>
+      <pre><code>go get github.com/business-schema/schema
+
+catalogue, err := schema.Load()
+customer, _ := catalogue.Entity("customer")</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <h2>What a definition tells you</h2>
+    <dl class="facts">
+      <div><dt>Shape</dt><dd>Each property's type and format, such as a date, a country code or a nested value type.</dd></div>
+      <div><dt>Personal data</dt><dd>Which properties identify a person, and which should stay masked until someone asks to see them.</dd></div>
+      <div><dt>Matching</dt><dd>Which property identifies the same record in another system, and when two values count as equal.</dd></div>
+      <div><dt>Life</dt><dd>For entities: the statuses a record moves through, the actions that change it and the events those raise.</dd></div>
+      <div><dt>Equivalents</dt><dd>Where a term matches one in <a href="https://schema.org">schema.org</a>, the definition links to it.</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <p class="prose">This is a draft. Definitions may change incompatibly until version 1.0. From 1.0, a change within a major version only adds.</p>
+  </section>
+</main>
+</div>
+{{template "foot"}}

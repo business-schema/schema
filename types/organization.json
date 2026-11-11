@@ -1,0 +1,46 @@
+{
+  "key": "organization",
+  "name": "Organization",
+  "description": "A company or other legal body, and how it is registered.",
+  "version": "0.1.0",
+  "sameAs": "https://schema.org/Organization",
+  "properties": [
+    {
+      "key": "name",
+      "name": "Name",
+      "description": "The name the organization trades under.",
+      "type": "string",
+      "sameAs": "https://schema.org/name"
+    },
+    {
+      "key": "legal_name",
+      "name": "Legal name",
+      "description": "The registered name, when it differs.",
+      "type": "string",
+      "sameAs": "https://schema.org/legalName"
+    },
+    {
+      "key": "registration_number",
+      "name": "Registration number",
+      "description": "The company number from its registry.",
+      "type": "string",
+      "compare": "case-insensitive"
+    },
+    {
+      "key": "tax_number",
+      "name": "Tax number",
+      "description": "Such as a VAT or EIN number.",
+      "type": "string",
+      "compare": "case-insensitive",
+      "sameAs": "https://schema.org/taxID"
+    },
+    {
+      "key": "website",
+      "name": "Website",
+      "type": "string",
+      "format": "url",
+      "compare": "case-insensitive",
+      "sameAs": "https://schema.org/url"
+    }
+  ]
+}

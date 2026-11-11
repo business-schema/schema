@@ -1,0 +1,21 @@
+{
+  "type": "individual",
+  "display_name": "Alex Morgan",
+  "person": {
+    "given_name": "Alex",
+    "family_name": "Morgan"
+  },
+  "email": "alex.morgan@example.com",
+  "phone": "+447700900123",
+  "addresses": {
+    "billing": {
+      "line1": "1 High Street",
+      "city": "London",
+      "postal_code": "SW1A 1AA",
+      "country": "GB"
+    }
+  },
+  "country": "GB",
+  "language": "en-GB",
+  "currency": "GBP"
+}

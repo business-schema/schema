@@ -1,0 +1,76 @@
+{{template "head" (printf "%s | Business Schema" .Name)}}
+<div class="shell">
+{{template "rail" .Nav}}
+<main>
+  <header class="intro">
+    <h1>{{.Name}}</h1>
+    <p>{{.Description}}</p>
+    <dl class="meta">
+      <div><dt>Kind</dt><dd>{{.Kind}}</dd></div>
+      <div><dt>Version</dt><dd>{{.Version}}</dd></div>
+      <div><dt>Definition</dt><dd><a href="{{.Key}}.json">{{.Key}}.json</a></dd></div>
+      {{if .SameAs}}<div><dt>Equivalent</dt><dd><a href="{{.SameAs}}">{{.SameAs}}</a></dd></div>{{end}}
+    </dl>
+  </header>
+
+  <section>
+    <h2>Properties</h2>
+    <div class="scroll">
+      <table class="properties">
+        <thead><tr><th>Key</th><th>Meaning</th><th>Type</th><th>Notes</th><th>Equivalent</th></tr></thead>
+        <tbody>
+          {{range .Properties}}
+          <tr>
+            <td><code>{{.Key}}</code></td>
+            <td>{{.Name}}{{if .Description}}<span class="detail">{{.Description}}</span>{{end}}</td>
+            <td>{{if .TypeLink}}<a href="{{.TypeLink}}">{{.TypeLabel}}</a>{{else}}{{.TypeLabel}}{{end}}</td>
+            <td>{{range .Notes}}<span class="line">{{.}}</span>{{end}}</td>
+            <td>{{if .SameAs}}<a href="{{.SameAs}}">{{.SameAs}}</a>{{end}}</td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="split">
+    {{if .Statuses}}
+    <div>
+      <section>
+        <h2>Statuses</h2>
+        <p class="aside">A new record takes the first status unless another is given.</p>
+        <table class="keys">
+          <tbody>{{range .Statuses}}<tr><td><code>{{.Key}}</code></td><td>{{.Name}}</td></tr>{{end}}</tbody>
+        </table>
+      </section>
+
+      {{if .Actions}}
+      <section>
+        <h2>Actions</h2>
+        <table class="keys">
+          <tbody>{{range .Actions}}<tr><td><code>{{.Key}}</code></td><td>{{.Name}}{{if .Description}}<span class="detail">{{.Description}}</span>{{end}}</td><td>{{if .Emits}}Raises {{range $i, $e := .Emits}}{{if $i}}, {{end}}<code>{{$e}}</code>{{end}}{{end}}</td></tr>{{end}}</tbody>
+        </table>
+      </section>
+      {{end}}
+
+      {{if .Events}}
+      <section>
+        <h2>Events</h2>
+        <table class="keys">
+          <tbody>{{range .Events}}<tr><td><code>{{.Key}}</code></td><td>{{.Name}}</td></tr>{{end}}</tbody>
+        </table>
+      </section>
+      {{end}}
+    </div>
+    {{end}}
+
+    {{if .Example}}
+    <section>
+      <h2>Example</h2>
+      <pre><code>{{.Example}}</code></pre>
+    </section>
+    {{end}}
+  </div>
+</main>
+</div>
+{{template "foot"}}

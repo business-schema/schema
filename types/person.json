@@ -1,0 +1,61 @@
+{
+  "key": "person",
+  "name": "Person",
+  "description": "An individual: how they are named and when they were born.",
+  "version": "0.1.0",
+  "sameAs": "https://schema.org/Person",
+  "properties": [
+    {
+      "key": "title",
+      "name": "Title",
+      "description": "Such as Ms, Dr or Prof.",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/honorificPrefix"
+    },
+    {
+      "key": "given_name",
+      "name": "Given name",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/givenName"
+    },
+    {
+      "key": "middle_name",
+      "name": "Middle name",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/additionalName"
+    },
+    {
+      "key": "family_name",
+      "name": "Family name",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/familyName"
+    },
+    {
+      "key": "suffix",
+      "name": "Suffix",
+      "description": "Such as Jr or PhD.",
+      "type": "string",
+      "pii": true,
+      "sameAs": "https://schema.org/honorificSuffix"
+    },
+    {
+      "key": "preferred_name",
+      "name": "Preferred name",
+      "description": "What the person likes to be called.",
+      "type": "string",
+      "pii": true
+    },
+    {
+      "key": "date_of_birth",
+      "name": "Date of birth",
+      "type": "date",
+      "pii": true,
+      "secure": true,
+      "sameAs": "https://schema.org/birthDate"
+    }
+  ]
+}

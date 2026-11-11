@@ -3,18 +3,48 @@
   "base": "entity",
   "name": "Customer",
   "pluralName": "Customers",
-  "description": "A person or organization the business sells to.",
+  "description": "A person or organization the business sells to or may sell to.",
   "version": "0.1.0",
   "properties": [
     {
-      "key": "type",
-      "name": "Account type",
+      "key": "party_type",
+      "name": "Party type",
       "type": "enum",
       "required": true,
       "options": {
         "individual": "Individual",
         "organization": "Organization"
+      },
+      "description": "Whether the customer is an individual or an organization."
+    },
+    {
+      "key": "lifecycle_stage",
+      "name": "Lifecycle stage",
+      "description": "The commercial relationship, independent of account status. A prospect has not yet become a customer; a closed relationship may later reopen.",
+      "type": "enum",
+      "required": true,
+      "options": {
+        "prospect": "Prospect",
+        "customer": "Customer",
+        "closed": "Closed"
       }
+    },
+    {
+      "key": "status",
+      "name": "Account status",
+      "description": "Whether the account is active or suspended, independent of lifecycle stage. A new account is active unless another status is given.",
+      "type": "enum",
+      "required": true,
+      "options": {
+        "active": "Active",
+        "suspended": "Suspended"
+      }
+    },
+    {
+      "key": "is_test_account",
+      "name": "Test account",
+      "description": "True for an account used for testing rather than a real customer relationship.",
+      "type": "boolean"
     },
     {
       "key": "display_name",
@@ -75,6 +105,12 @@
       "compare": "case-insensitive"
     },
     {
+      "key": "timezone",
+      "name": "Timezone",
+      "description": "IANA timezone identifier, such as Europe/London.",
+      "type": "string"
+    },
+    {
       "key": "language",
       "name": "Language",
       "type": "string",
@@ -91,11 +127,6 @@
   ],
   "statuses": [
     {
-      "key": "prospect",
-      "name": "Prospect",
-      "tone": "info"
-    },
-    {
       "key": "active",
       "name": "Active",
       "tone": "success"
@@ -104,11 +135,6 @@
       "key": "suspended",
       "name": "Suspended",
       "tone": "warning"
-    },
-    {
-      "key": "closed",
-      "name": "Closed",
-      "tone": "neutral"
     }
   ],
   "actions": [
@@ -122,9 +148,25 @@
     {
       "key": "update",
       "name": "Update customer",
-      "description": "Change properties or status.",
+      "description": "Change customer details. Use change_status or change_lifecycle for account status and lifecycle changes.",
       "emits": [
         "updated"
+      ]
+    },
+    {
+      "key": "change_status",
+      "name": "Status change",
+      "description": "Change account status without changing the lifecycle stage.",
+      "emits": [
+        "status_changed"
+      ]
+    },
+    {
+      "key": "change_lifecycle",
+      "name": "Lifecycle change",
+      "description": "Change lifecycle stage without changing account status.",
+      "emits": [
+        "lifecycle_changed"
       ]
     }
   ],
@@ -136,6 +178,16 @@
     {
       "key": "updated",
       "name": "Customer updated"
+    },
+    {
+      "key": "status_changed",
+      "name": "Status changed",
+      "description": "The account status changed."
+    },
+    {
+      "key": "lifecycle_changed",
+      "name": "Lifecycle changed",
+      "description": "The commercial relationship moved to another lifecycle stage."
     }
   ]
 }

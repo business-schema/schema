@@ -76,6 +76,19 @@ that namespace. Omit it when routing is unambiguous. Reference identity is
 default route. IDs and routing keys are opaque, case-sensitive strings.
 External references are optional; omit the property when none are known.
 
+## Customer lifecycle and status
+
+`party_type` distinguishes an `individual` from an `organization`.
+`lifecycle_stage` describes the relationship: `prospect`, `customer` or
+`closed`. The separate `status` describes the account: `active` or
+`suspended`. A prospect can have an active account, and closing the
+relationship does not itself change account status.
+
+Use `change_lifecycle` and `change_status` to change these fields; they emit
+`lifecycle_changed` and `status_changed`, respectively. `is_test_account`
+marks accounts used for testing. `timezone` holds an IANA timezone name such
+as `Europe/London`.
+
 ## Using it from Go
 
 ```go

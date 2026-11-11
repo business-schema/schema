@@ -17,7 +17,7 @@
       }
     ]
   },
-  "type": "individual",
+  "party_type": "individual",
   "display_name": "Alex Morgan",
   "person": {
     "given_name": "Alex",
@@ -35,5 +35,9 @@
   },
   "country": "GB",
   "language": "en-GB",
-  "currency": "GBP"
+  "currency": "GBP",
+  "lifecycle_stage": "customer",
+  "status": "active",
+  "timezone": "Europe/London",
+  "is_test_account": false
 }
